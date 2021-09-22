@@ -79,6 +79,10 @@ void utc_set_time(UTCTimeStruct *tm)
 
 }
 
+uint32_t i4utc_get_time(void)
+{
+	return (utc_get_clock());
+}
 
 void utc_get_time(UTCTimeStruct *tm)
 {

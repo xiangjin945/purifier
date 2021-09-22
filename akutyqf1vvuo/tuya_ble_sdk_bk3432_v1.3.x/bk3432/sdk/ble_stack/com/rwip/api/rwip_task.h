@@ -168,6 +168,8 @@ enum TASK_API_ID
 	TASK_ID_FEE0S		 = 75,
 	
     TASK_ID_GMAS		 = 76,   //Alibaba GMA SERVICE
+
+    TASK_ID_MAIN         = 77,
     /* 240 -> 241 reserved for Audio Mode 0 */
     TASK_ID_AM0          = 240,  // BLE Audio Mode 0 Task
     TASK_ID_AM0_HAS      = 241,  // BLE Audio Mode 0 Hearing Aid Service Task

@@ -127,7 +127,7 @@ void custom_evt_1_send_test(uint8_t data)
     event.data = &custom_data;
     tuya_ble_custom_event_send(event);
 }
-
+#include "mcu_handler.h"
 static uint16_t sn = 0;
 static uint32_t time_stamp = 1587795793;
 static void tuya_cb_handler(tuya_ble_cb_evt_param_t* event)
@@ -144,14 +144,18 @@ static void tuya_cb_handler(tuya_ble_cb_evt_param_t* event)
         memset(dp_data_array,0,sizeof(dp_data_array));
         memcpy(dp_data_array,event->dp_write_data.p_data,dp_data_len);
         TUYA_APP_LOG_HEXDUMP_DEBUG("received dp write data :",dp_data_array,dp_data_len);
+        i4AppEvtMcuHandler(dp_data_array,dp_data_len);
+        
         tuya_ble_dp_data_report(dp_data_array,dp_data_len);
 
         break;
     case TUYA_BLE_CB_EVT_DP_DATA_REPORT_RESPONSE:
+        TUYA_APP_LOG_INFO("TUYA_BLE_CB_EVT_DP_DATA_REPORT_RESPONSE\r\n");
         TUYA_APP_LOG_INFO("received dp data report response result code =%d",event->dp_response_data.status);
 
         break;
     case TUYA_BLE_CB_EVT_DP_DATA_WTTH_TIME_REPORT_RESPONSE:
+        TUYA_APP_LOG_INFO("TUYA_BLE_CB_EVT_DP_DATA_WTTH_TIME_REPORT_RESPONSE\r\n");
         TUYA_APP_LOG_INFO("received dp data report response result code =%d",event->dp_with_time_response_data.status);
 
         break;

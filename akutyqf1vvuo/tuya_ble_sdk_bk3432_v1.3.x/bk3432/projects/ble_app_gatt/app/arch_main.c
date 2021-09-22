@@ -59,6 +59,10 @@
 #include "rtc.h"
 #include "user_config.h"
 
+#include "mcu_handler.h"
+#include "utc_clock.h"
+
+#include "app_tuya.h"
 /**
  ****************************************************************************************
  * @addtogroup DRIVERS
@@ -227,7 +231,24 @@ void user_timer_init(void)
 	pwm_enable(timer_desc.channel);
 }
 #endif
+void i4PwmInit(uint8_t channel,uint16_t value,uint16_t duty)
+{
+	PWM_DRV_DESC drv_desc;
+	drv_desc.channel = channel; 
+	drv_desc.mode = 0x11;
+	drv_desc.pre_divid = 0;
+	drv_desc.end_value = value;
+	drv_desc.duty_cycle = duty;
+	drv_desc.p_Int_Handler = NULL;
 
+	REG_AHB0_ICU_PWMCLKCON |= (1<<1);
+    REG_AHB0_ICU_PWMCLKCON &= ~(7<<12);
+    REG_AHB0_ICU_PWMCLKCON |= (8<<12);
+
+	pwm_init(&drv_desc);
+	// pwm_enable(drv_desc.channel);
+	// pwm_disable(drv_desc.channel);
+}
 
 /**
  *******************************************************************************
@@ -310,7 +331,7 @@ void rw_main(void)
 	// finally start interrupt handling
 	GLOBAL_INT_START();
 
-#if 1
+#if 0
 	gpio_config(GPIOD_1, OUTPUT, PULL_NONE);
     gpio_set(GPIOD_1, 1);//电机电源启动
 
@@ -330,8 +351,33 @@ void rw_main(void)
 
 
 #endif
+	GPIO_INIT();
+	gpio_config(GPIOB_0, OUTPUT, PULL_NONE);
+	gpio_set(GPIOD_1, 1);//电机电源启动
+	gpio_set(GPIOB_0, 1);//pwm脚使能
+
+
+	Delay_ms(2000);
+	i4PwmInit(0,16000,8000);
+	UART_PRINTF("start 2\r\n"); 
+
+	UTCTimeStruct *tm = (UTCTimeStruct *)tuya_ble_malloc(sizeof(UTCTimeStruct));
+	if(tm == NULL) UART_PRINTF("-1\n");
+	// utc_update();
+	// utc_get_time(tm);
+	// while(1){
+	// 	utc_update();
+	// 	utc_get_time(tm);
+	// 	UART_PRINTF("utc_get_clock():%d %d\n",tm->seconds,i4utc_get_time());
+
+	// 	if(i4utc_get_time() == 50)
+	// 	{
+	// 		app_tuya_init();
+	// 	}
+		
+	// 	Delay_ms(1000);
+	// }
 	
-	UART_PRINTF("start 2\r\n");
 
 	/*
 	 ***************************************************************************
@@ -340,6 +386,7 @@ void rw_main(void)
 	 */
 	while(1)
 	{
+		utc_update();
 		//schedule all pending events
 		rwip_schedule();
 
@@ -376,6 +423,7 @@ void rw_main(void)
 #endif
 		Stack_Integrity_Check();
 		GLOBAL_INT_RESTORE();
+		i4PowerButtonProcessing();
 	}
 }
 

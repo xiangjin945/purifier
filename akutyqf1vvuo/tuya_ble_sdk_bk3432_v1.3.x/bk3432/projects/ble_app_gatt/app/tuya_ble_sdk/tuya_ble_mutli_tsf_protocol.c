@@ -585,12 +585,14 @@ mtp_ret data_2_klvlist(unsigned char *data,unsigned int len,klv_node_s **list,un
 
         //node = (klv_node_s *)tuya_malloc(sizeof(klv_node_s)+data[(2+offset)]);
         node = (klv_node_s *)tuya_ble_malloc(sizeof(klv_node_s));
-        if(NULL == node)
+        klv_list = (klv_node_s *)tuya_ble_malloc(sizeof(klv_node_s));
+        if(NULL == node || NULL == klv_list)
         {
             free_klv_list(klv_list);
             return MTP_MALLOC_ERR;
         }
         memset(node,0,sizeof(sizeof(klv_node_s)));
+        memset(klv_list,0,sizeof(sizeof(klv_node_s)));
         if(1 == type)
         {
             node->data=tuya_ble_malloc(data[3+offset]);  //这里虽然len用两个字节表示，但是只用了低字节
@@ -635,7 +637,7 @@ mtp_ret data_2_klvlist(unsigned char *data,unsigned int len,klv_node_s **list,un
         node->next = klv_list;
         klv_list = node;
     } while(offset < len);
-
+    UART_PRINTF("DP:%d,type:%d,len:%d,data:%d.\r\n",klv_list->id,klv_list->type,klv_list->len,*klv_list->data);
     if(NULL == klv_list)
     {
         return MTP_COM_ERROR;

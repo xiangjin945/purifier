@@ -37,7 +37,7 @@ typedef struct
   uint16_t year;    // 2000+
 } UTCTimeStruct;
 
-
+uint32_t i4utc_get_time(void);
 void utc_update( void );
 void utc_set_time(UTCTimeStruct *tm);
 void utc_get_time(UTCTimeStruct *tm);

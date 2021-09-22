@@ -16,7 +16,7 @@
 #include <stddef.h>        // standard definition
 #include "BK3432_reg.h"
 #include "rtc.h"
-
+#include "uart.h"
 
 static void (*p_RTC_Int_Handler)(void) = NULL;
 
@@ -26,9 +26,10 @@ void rtc_init(RTC_DATE_DESC *p_RTC_date_desc)
 {
     if (p_RTC_date_desc == NULL)
     {
+        UART_PRINTF("null================================\n");
         return;
     }
-
+    UART_PRINTF("rtc_init\n");
     ICU_RTC_CLK_PWD_CLEAR();
 
     REG_APB6_RTC_CFG  = (1 << BIT_RTC_ENABLE)
@@ -150,6 +151,7 @@ void rtc_int_handler_clear(void)
 
 void rtc_isr(void)
 {
+    UART_PRINTF("rtc_init\n");
     if (REG_APB6_RTC_ALM_FLAG & (0x1 << 0))
     {
         if (p_RTC_Int_Handler != NULL)

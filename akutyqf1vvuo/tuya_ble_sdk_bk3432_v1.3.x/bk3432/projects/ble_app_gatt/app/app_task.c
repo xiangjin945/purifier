@@ -335,7 +335,7 @@ static int gapc_set_dev_info_req_ind_handler(ke_msg_id_t const msgid,
 /**
  ****************************************************************************************
  * @brief Handles connection complete event from the GAP. Enable all required profiles
- *
+ * 从GAP处理连接完成事件。启用所有必需的配置文件
  * @param[in] msgid     Id of the message received.
  * @param[in] param     Pointer to the parameters of the message.
  * @param[in] dest_id   ID of the receiving task instance (TASK_GAP).
