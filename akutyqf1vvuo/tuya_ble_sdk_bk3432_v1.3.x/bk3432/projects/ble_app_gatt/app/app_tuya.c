@@ -48,6 +48,7 @@
 #include "tuya_ble_main.h"
 #include "app_tuya_ota.h"
 #include "uart2.h"
+#include "stdlib.h"
 
 /*
  * DEFINES
@@ -132,12 +133,16 @@ static uint16_t sn = 0;
 static uint32_t time_stamp = 1587795793;
 static void tuya_cb_handler(tuya_ble_cb_evt_param_t* event)
 {
-    UART_PRINTF("\r\event->evt = 0x%04x =======================\r\n",event->evt);
+    // UART_PRINTF("\r\event->evt = 0x%04x =======================\r\n",event->evt);
     int16_t result = 0;
     switch (event->evt)
     {
     case TUYA_BLE_CB_EVT_CONNECTE_STATUS:
         TUYA_APP_LOG_INFO("received tuya ble conncet status update event,current connect status = %d",event->connect_status);
+        //0：设备断开 3:设备连接但未在线 4：设备连接并且在线
+        BleConnectStatus = event->connect_status;
+        xDataFirstReport = true;
+        
         break;
     case TUYA_BLE_CB_EVT_DP_WRITE:
         dp_data_len = event->dp_write_data.data_len;
@@ -145,13 +150,13 @@ static void tuya_cb_handler(tuya_ble_cb_evt_param_t* event)
         memcpy(dp_data_array,event->dp_write_data.p_data,dp_data_len);
         TUYA_APP_LOG_HEXDUMP_DEBUG("received dp write data :",dp_data_array,dp_data_len);
         i4AppEvtMcuHandler(dp_data_array,dp_data_len);
-        
+        I4Printf("dp_data_array:%d %d %d %d,len:%d\n",dp_data_array[0],dp_data_array[1],dp_data_array[2],dp_data_array[3],dp_data_len);
         tuya_ble_dp_data_report(dp_data_array,dp_data_len);
 
         break;
     case TUYA_BLE_CB_EVT_DP_DATA_REPORT_RESPONSE:
-        TUYA_APP_LOG_INFO("TUYA_BLE_CB_EVT_DP_DATA_REPORT_RESPONSE\r\n");
-        TUYA_APP_LOG_INFO("received dp data report response result code =%d",event->dp_response_data.status);
+        // TUYA_APP_LOG_INFO("TUYA_BLE_CB_EVT_DP_DATA_REPORT_RESPONSE\r\n");
+        // TUYA_APP_LOG_INFO("received dp data report response result code =%d",event->dp_response_data.status);
 
         break;
     case TUYA_BLE_CB_EVT_DP_DATA_WTTH_TIME_REPORT_RESPONSE:
@@ -189,6 +194,8 @@ static void tuya_cb_handler(tuya_ble_cb_evt_param_t* event)
         break;
     case TUYA_BLE_CB_EVT_TIME_STAMP:
         TUYA_APP_LOG_INFO("received unix timestamp : %s ,time_zone : %d",event->timestamp_data.timestamp_string,event->timestamp_data.time_zone);
+
+
         break;
     case TUYA_BLE_CB_EVT_TIME_NORMAL:
 

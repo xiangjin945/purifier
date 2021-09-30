@@ -151,11 +151,13 @@ void rtc_int_handler_clear(void)
 
 void rtc_isr(void)
 {
-    UART_PRINTF("rtc_init\n");
+   
     if (REG_APB6_RTC_ALM_FLAG & (0x1 << 0))
     {
         if (p_RTC_Int_Handler != NULL)
         {
+             UART_PRINTF("rtc_init\n");
+             rtc_alarm_disable();
             (void)p_RTC_Int_Handler();
         }
     }

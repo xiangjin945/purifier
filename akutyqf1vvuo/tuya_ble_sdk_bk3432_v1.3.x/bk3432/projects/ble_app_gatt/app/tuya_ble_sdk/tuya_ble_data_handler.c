@@ -860,7 +860,7 @@ static void tuya_ble_handle_ble_factory_test_req(uint8_t*recv_data,uint16_t recv
 
 }
 
-
+#include "mcu_handler.h"
 static char current_timems_string[14] = "000000000000";
 
 static void tuya_ble_handle_unix_time_char_ms_resp(uint8_t*recv_data,uint16_t recv_len)
@@ -885,6 +885,8 @@ static void tuya_ble_handle_unix_time_char_ms_resp(uint8_t*recv_data,uint16_t re
         time_stamp_ms = atoll(current_timems_string);
         TUYA_BLE_LOG_INFO("received unix time_zone = %d\n",zone_temp);
         time_stamp = time_stamp_ms/1000;
+        UART_PRINTF("received unix time = %d\n",time_stamp);
+        i4read_falsh_save_time(time_stamp);
         if(time_stamp_ms%1000>=500)
         {
             time_stamp += 1;
@@ -1335,7 +1337,7 @@ recv_data[0]
 
 void tuya_ble_evt_process(uint16_t cmd,uint8_t*recv_data,uint32_t recv_len)
 {
-    UART_PRINTF("\r\ncmd = 0x%04x =======================\r\n",cmd);
+    // UART_PRINTF("\r\ncmd = 0x%04x =======================\r\n",cmd);
     switch(cmd)
     {
         
@@ -1361,6 +1363,7 @@ void tuya_ble_evt_process(uint16_t cmd,uint8_t*recv_data,uint32_t recv_len)
         tuya_ble_handle_ota_req(cmd,recv_data,recv_len);
         break;
     case FRM_GET_UNIX_TIME_CHAR_MS_RESP:
+        // UART_PRINTF("8011--==-=---------------------------------\n");
         tuya_ble_handle_unix_time_char_ms_resp(recv_data,recv_len);
         break;
     case FRM_GET_UNIX_TIME_CHAR_DATE_RESP:

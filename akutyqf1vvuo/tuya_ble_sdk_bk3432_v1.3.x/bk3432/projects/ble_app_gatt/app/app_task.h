@@ -90,6 +90,8 @@ enum appm_msg
     APP_TUYA_AUTO_RECOVERY_FROM_RESETTING_TIMER,     
 #endif    
     APP_TUYA_BLE_EVT,	
+    SUBLE_TIMER0,
+    SUBLE_TIMER_MAX,
 };
 
 
@@ -100,6 +102,7 @@ enum appm_msg
 
 extern const struct ke_state_handler appm_default_handler;
 extern ke_state_t appm_state[APP_IDX_MAX];
+void my_timer_start(void);
 
 
 /// @} APPTASK

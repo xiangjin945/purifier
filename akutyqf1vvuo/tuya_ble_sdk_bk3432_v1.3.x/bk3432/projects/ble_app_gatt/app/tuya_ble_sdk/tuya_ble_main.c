@@ -71,7 +71,7 @@ uint8_t tuya_ble_event_send(tuya_ble_evt_param_t *evt)
 
     if(tuya_ble_message_send(evt)==TUYA_BLE_SUCCESS)
     {
-        TUYA_APP_LOG_INFO("tuya_ble_event_send:TUYA_BLE_SUCCESS\r\n");
+        // TUYA_APP_LOG_INFO("tuya_ble_event_send:TUYA_BLE_SUCCESS\r\n");
         return 0;
     }
     else
@@ -108,7 +108,7 @@ uint8_t tuya_ble_custom_event_send(tuya_ble_custom_evt_t evt)
 
 tuya_ble_status_t tuya_ble_inter_event_response(tuya_ble_cb_evt_param_t *param)
 {
-    UART_PRINTF("param->evt = 0x%04x \r\n", param->evt);
+    // UART_PRINTF("param->evt = 0x%04x \r\n", param->evt);s
     switch (param->evt)
     {
     case TUYA_BLE_CB_EVT_CONNECTE_STATUS:
@@ -164,7 +164,6 @@ uint8_t tuya_ble_cb_event_send(tuya_ble_cb_evt_param_t *evt)
 
 void tuya_ble_event_process(tuya_ble_evt_param_t *tuya_ble_evt)
 {
-    UART_PRINTF("tuya_ble_event_process====================%d\r\n",tuya_ble_evt->hdr.event);
     switch(tuya_ble_evt->hdr.event)
     {
     case TUYA_BLE_EVT_DEVICE_INFO_UPDATE:

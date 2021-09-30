@@ -62,13 +62,11 @@ void pwm_init(PWM_DRV_DESC *pwm_drv_desc)
     if (pwm_drv_desc->mode & 0x10)
     {
         // select 16MHz
-        UART_PRINTF("select 16MHz\r\n");
         ICU_PWM_CLK_PWM_X_SEL_16MHZ(pwm_drv_desc->channel);
     }
     else
     {
         // select 32KHz
-        UART_PRINTF("select 32KHz\r\n");
         ICU_PWM_CLK_PWM_X_SEL_32KHZ(pwm_drv_desc->channel);
     }
 	//Config duty_cycle and end value

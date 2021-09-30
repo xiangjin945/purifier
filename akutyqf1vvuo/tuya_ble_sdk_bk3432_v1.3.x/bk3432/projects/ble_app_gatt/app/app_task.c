@@ -179,7 +179,7 @@ static int gapm_cmp_evt_handler(ke_msg_id_t const msgid,
         {
             // Go to the ready state
             ke_state_set(TASK_APP, APPM_READY);
-
+            // my_timer_start();
             appm_start_advertising();
                        
         }
@@ -822,10 +822,24 @@ static int app_tuya_event_handler(ke_msg_id_t const msgid,
                                   ke_task_id_t const dest_id,
                                   ke_task_id_t const src_id)
 {
-    UART_PRINTF("%s \r\n", __func__);
-    UART_PRINTF("TUYA_BLE_EVENT - EVENT ID = 0x%04x \r\n", param->evt.hdr.event);
+    // UART_PRINTF("%s \r\n", __func__);
+    // UART_PRINTF("TUYA_BLE_EVENT - EVENT ID = 0x%04x \r\n", param->evt.hdr.event);
 
     tuya_ble_event_process((tuya_ble_evt_param_t *)&param->evt);
+
+    return (KE_MSG_CONSUMED);
+
+}
+
+static int app_tuya_timer_handler(ke_msg_id_t const msgid,
+                                  struct app_tuya_ble_evt_param_t const *param,
+                                  ke_task_id_t const dest_id,
+                                  ke_task_id_t const src_id)
+{
+    UART_PRINTF("%s \r\n", __func__);
+    // UART_PRINTF("TUYA_BLE_EVENT - EVENT ID = 0x%04x \r\n", param->evt.hdr.event);
+
+    // tuya_ble_event_process((tuya_ble_evt_param_t *)&param->evt);
 
     return (KE_MSG_CONSUMED);
 
@@ -862,6 +876,7 @@ const struct ke_msg_handler appm_default_state[] =
     {APP_TUYA_AUTO_RECOVERY_FROM_RESETTING_TIMER,   (ke_msg_func_t)app_tuya_auto_recovery_from_resetting_timer_handler},
 #endif
     {APP_TUYA_BLE_EVT,				(ke_msg_func_t)app_tuya_event_handler},
+    {SUBLE_TIMER0,                  (ke_msg_func_t)app_tuya_timer_handler},
 };
 
 /* Specifies the message handlers that are common to all states. */
@@ -869,6 +884,54 @@ const struct ke_state_handler appm_default_handler = KE_STATE_HANDLER(appm_defau
 
 /* Defines the place holder for the states of all the task instances. */
 ke_state_t appm_state[APP_IDX_MAX];
+
+/*********************************************************************
+ * LOCAL VARIABLE
+ */
+ typedef struct {
+    uint32_t count;
+    uint32_t delay;
+} suble_timer_t;
+
+static suble_timer_t s_suble_timer[SUBLE_TIMER_MAX-SUBLE_TIMER0] = {0};
+#define SUBLE_TIMER_COUNT_ENDLESS               0xFFFFFFFF
+/*********************************************************
+FN: 启动
+*/
+void suble_timer_start_0(ke_msg_id_t const timer_id, uint32_t ms, uint32_t count)
+{
+    if((timer_id < SUBLE_TIMER0) || (timer_id >= SUBLE_TIMER_MAX)) {
+        return;
+    }
+    
+    uint32_t idx = timer_id - SUBLE_TIMER0;
+    s_suble_timer[idx].delay = ms/10;
+    s_suble_timer[idx].count = count;
+    ke_timer_set(timer_id, TASK_APP, s_suble_timer[idx].delay);
+}
+
+/*********************************************************
+FN: 停止
+*/
+void suble_timer_stop_0(ke_msg_id_t const timer_id)
+{
+    if((timer_id < SUBLE_TIMER0) || (timer_id >= SUBLE_TIMER_MAX)) {
+        return;
+    }
+    
+    uint32_t idx = timer_id-SUBLE_TIMER0;
+    s_suble_timer[idx].count = 0;
+    s_suble_timer[idx].delay = 0;
+    if(ke_timer_active(timer_id, TASK_APP)) {
+        ke_timer_clear(timer_id, TASK_APP);
+    }
+}
+
+void my_timer_start(void)
+{
+    suble_timer_start_0(SUBLE_TIMER0,1000 ,SUBLE_TIMER_COUNT_ENDLESS);
+	
+}
 
 #endif //(BLE_APP_PRESENT)
 

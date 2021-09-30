@@ -57,13 +57,13 @@
 
 #define TUYA_BLE_LOG_ERROR(...)
 #define TUYA_BLE_LOG_WARNING(...)
-#define TUYA_BLE_LOG_INFO(fmt,args...)      UART_PRINTF("[F:%s L:%d]:"fmt,__FILE__,__LINE__,##args) 
+#define TUYA_BLE_LOG_INFO(fmt,args...)     
 #define TUYA_BLE_LOG_DEBUG(...)
 
 #define TUYA_BLE_LOG_HEXDUMP_ERROR(...)        
 #define TUYA_BLE_LOG_HEXDUMP_WARNING(...)     
 #define TUYA_BLE_LOG_HEXDUMP_INFO(...)       
-#define TUYA_BLE_LOG_HEXDUMP_DEBUG(...)     TUYA_BLE_LOG_INTERNAL_HEXDUMP_DEBUG( __VA_ARGS__)
+#define TUYA_BLE_LOG_HEXDUMP_DEBUG(...)    
 
 #endif // 
 
